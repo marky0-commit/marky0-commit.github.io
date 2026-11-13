@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GuideSetup — Car Setup Troubleshooter</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --warn: #d29922;
+      --good: #3fb950;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px 16px 60px;
+    }
+    .container { max-width: 820px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { font-size: 1.5rem; letter-spacing: -0.02em; }
+    .back-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+    .back-link:hover { color: var(--text); border-color: var(--accent); }
+    .controls {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    input[type="search"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    input[type="search"]:focus { outline: none; border-color: var(--accent); }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tab {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .tab.active, .tab:hover {
+      background: #1f2937;
+      color: var(--text);
+      border-color: var(--accent);
+    }
+    .grid { display: grid; gap: 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .symptom { font-size: 1.1rem; font-weight: 600; }
+    .phase {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.12);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .fix-list { list-style: none; display: grid; gap: 10px; }
+    .fix-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .fix-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .priority {
+      font-size: 0.72rem;
+      color: var(--good);
+      border: 1px solid rgba(63, 185, 80, 0.4);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .fix-why { font-size: 0.88rem; color: var(--muted); margin-top: 4px; }
+    .fix-warn { font-size: 0.82rem; color: var(--warn); margin-top: 4px; }
+    .check-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .tracker {
+      margin-top: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .tracker-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    button.btn {
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    button.btn.secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    #notesList { font-size: 0.88rem; color: var(--muted); padding-left: 18px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>GuideSetup</h1>
+      <a class="back-link" href="../">← Projects</a>
+    </header>
+
+    <div class="controls">
+      <input type="search" id="search" placeholder="Search symptom or setting (e.g., understeer, ARB, camber, braking)..." />
+      <div class="tabs" id="phaseTabs">
+        <button class="tab active" data-phase="All">All Phases</button>
+        <button class="tab" data-phase="Corner Entry">Corner Entry</button>
+        <button class="tab" data-phase="Mid-Corner">Mid-Corner</button>
+        <button class="tab" data-phase="Corner Exit">Corner Exit</button>
+        <button class="tab" data-phase="Braking & Kerbs">Braking & Kerbs</button>
+      </div>
+    </div>
+
+    <div class="grid" id="cards"></div>
+
+    <div class="tracker">
+      <div class="tracker-head">
+        <strong>Tested Changes Checklist</strong>
+        <div style="display:flex; gap:8px;">
+          <button class="btn secondary" id="clearBtn">Clear</button>
+          <button class="btn" id="copyBtn">Copy Notes</button>
+        </div>
+      </div>
+      <ul id="notesList"><li>Tick any adjustment above to track what you changed.</li></ul>
+    </div>
+  </div>
+
+  <script>
+    const DATA = [
+      {
+        symptom: "Understeer on Corner Entry (Won't turn in)",
+        phase: "Corner Entry",
+        fixes: [
+          { action: "Move Brake Bias rearward (-1% to -2%)", priority: "Quick Fix", why: "Shifts braking weight slightly back and helps the nose rotate into the apex.", warn: "Watch out for rear lockups under heavy braking." },
+          { action: "Soften Front Anti-Roll Bar (ARB)", priority: "Easy", why: "Allows more front lateral grip and bite during initial turn-in.", warn: "Can make steering feel slightly slower in rapid chicanes." },
+          { action: "Add Front Toe-Out (-0.10° to -0.20°)", priority: "Alignment", why: "Sharpens initial turn-in response immediately.", warn: "Increases front tire wear and straight-line sensitivity." },
+          { action: "Lower Differential Coast / Preload", priority: "Diff", why: "Lets the inside and outside wheels rotate more freely off-throttle.", warn: "Too low can cause entry snap-oversteer." }
+        ]
+      },
+      {
+        symptom: "Oversteer on Corner Entry (Loose rear under braking)",
+        phase: "Corner Entry",
+        fixes: [
+          { action: "Move Brake Bias forward (+1% to +2%)", priority: "Quick Fix", why: "Stabilizes the rear axle and prevents rear wheels from locking first.", warn: "Too much forward bias causes front lockups and entry understeer." },
+          { action: "Increase Differential Coast Lock / Preload", priority: "Diff", why: "Ties the rear wheels together off-throttle to resist rotation.", warn: "Can introduce entry understeer if set too high." },
+          { action: "Stiffen Front Springs or Bump Damper", priority: "Suspension", why: "Slows down forward pitch under braking so the rear stays planted.", warn: "Makes the front ride harsher over bumps." }
+        ]
+      },
+      {
+        symptom: "Mid-Corner Understeer (Pushing wide at apex)",
+        phase: "Mid-Corner",
+        fixes: [
+          { action: "Soften Front ARB or Stiffen Rear ARB", priority: "Easy", why: "Shifts lateral load transfer toward the rear, freeing up front grip.", warn: "Stiffening rear ARB too much can cause sudden mid-corner oversteer." },
+          { action: "Increase Front Negative Camber", priority: "Alignment", why: "Maximizes the front tire contact patch when loaded in a turn.", warn: "Check tire temps (inner vs outer) so you don't overheat the inside edge." },
+          { action: "Increase Front Wing / Splitter or Raise Rear Ride Height", priority: "Aero", why: "Adds front downforce / rake for high-speed corners.", warn: "Higher rake can make the rear nervous in fast sweepers." }
+        ]
+      },
+      {
+        symptom: "Mid-Corner Oversteer (Rear slides at apex)",
+        phase: "Mid-Corner",
+        fixes: [
+          { action: "Soften Rear ARB or Stiffen Front ARB", priority: "Easy", why: "Gives the rear tires more mechanical grip through sustained cornering.", warn: "May cause mild push on entry." },
+          { action: "Increase Rear Wing / Downforce", priority: "Aero", why: "Plants the rear axle in medium- and high-speed corners.", warn: "Reduces top speed on long straights." },
+          { action: "Increase Rear Negative Camber", priority: "Alignment", why: "Improves rear lateral grip while leaning on the outside tire.", warn: "Too much negative camber hurts straight-line braking and traction." }
+        ]
+      },
+      {
+        symptom: "Power-On Oversteer (Wheelspin / snap on exit)",
+        phase: "Corner Exit",
+        fixes: [
+          { action: "Soften Rear Springs or Rear ARB", priority: "Easy", why: "Allows the rear to squat and put power down smoothly.", warn: "Slows down transition response." },
+          { action: "Lower Differential Power Lock", priority: "Diff", why: "Prevents both rear tires from breaking traction simultaneously.", warn: "Too low can cause inside wheelspin on tight hairpins." },
+          { action: "Lower Rear Tire Pressures slightly (-0.3 to -0.5 psi)", priority: "Quick Fix", why: "Widens the rear contact patch for better longitudinal traction.", warn: "Keep hot pressures inside the tire's optimal window." }
+        ]
+      },
+      {
+        symptom: "Power-On Understeer (Car pushes wide on throttle)",
+        phase: "Corner Exit",
+        fixes: [
+          { action: "Stiffen Rear ARB or Soften Front Rebound", priority: "Suspension", why: "Keeps weight on the front tires as you get back on the throttle.", warn: "Watch for snap traction loss on bumpy exits." },
+          { action: "Increase Differential Power Lock", priority: "Diff", why: "Helps drive the car forward and rotate under throttle.", warn: "Can trigger power oversteer if aggressive with the pedal." },
+          { action: "Lower Rear Ride Height slightly", priority: "Aero/Geo", why: "Reduces excessive squat on exit that unloads the front wheels.", warn: "Affects overall aero rake balance." }
+        ]
+      },
+      {
+        symptom: "Unstable Over Kerbs & Bumps",
+        phase: "Braking & Kerbs",
+        fixes: [
+          { action: "Soften Fast Bump & Fast Rebound Dampers", priority: "Dampers", why: "Lets the wheels absorb sharp kerb impacts without launching the chassis.", warn: "Too soft can allow the floor to bottom out." },
+          { action: "Raise Ride Height (+2 to +5 mm)", priority: "Quick Fix", why: "Gives extra suspension travel and prevents splitter/floor strikes.", warn: "Slightly reduces aerodynamic downforce." },
+          { action: "Soften Springs & ARBs", priority: "Suspension", why: "Improves mechanical compliance over rough surfaces.", warn: "Increases body roll." }
+        ]
+      }
+    ];
+
+    let activePhase = "All";
+    const checked = new Set();
+
+    const cardsEl = document.getElementById("cards");
+    const searchEl = document.getElementById("search");
+    const notesEl = document.getElementById("notesList");
+
+    function render() {
+      const q = searchEl.value.toLowerCase().trim();
+      const filtered = DATA.filter(item => {
+        const matchPhase = activePhase === "All" || item.phase === activePhase;
+        const matchText = !q ||
+          item.symptom.toLowerCase().includes(q) ||
+          item.fixes.some(f => f.action.toLowerCase().includes(q) || f.why.toLowerCase().includes(q));
+        return matchPhase && matchText;
+      });
+
+      cardsEl.innerHTML = filtered.map((item, i) => `
+        <div class="card">
+          <div class="card-header">
+            <div class="symptom">${item.symptom}</div>
+            <span class="phase">${item.phase}</span>
+          </div>
+          <ul class="fix-list">
+            ${item.fixes.map((f, j) => {
+              const id = `${item.symptom} -> ${f.action}`;
+              const isChecked = checked.has(id) ? "checked" : "";
+              return `
+                <li class="fix-item">
+                  <div class="fix-top">
+                    <label class="check-label">
+                      <input type="checkbox" data-note="${id.replace(/"/g, '&quot;')}" ${isChecked} />
+                      <span>${f.action}</span>
+                    </label>
+                    <span class="priority">${f.priority}</span>
+                  </div>
+                  <div class="fix-why">${f.why}</div>
+                  <div class="fix-warn">⚠ ${f.warn}</div>
+                </li>
+              `;
+            }).join("")}
+          </ul>
+        </div>
+      `).join("");
+    }
+
+    function renderNotes() {
+      if (checked.size === 0) {
+        notesEl.innerHTML = "<li>Tick any adjustment above to track what you changed.</li>";
+        return;
+      }
+      notesEl.innerHTML = [...checked].map(n => `<li>${n}</li>`).join("");
+    }
+
+    document.getElementById("phaseTabs").addEventListener("click", e => {
+      if (!e.target.classList.contains("tab")) return;
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      e.target.classList.add("active");
+      activePhase = e.target.dataset.phase;
+      render();
+    });
+
+    searchEl.addEventListener("input", render);
+
+    cardsEl.addEventListener("change", e => {
+      if (e.target.type !== "checkbox") return;
+      const note = e.target.dataset.note;
+      if (e.target.checked) checked.add(note);
+      else checked.delete(note);
+      renderNotes();
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      checked.clear();
+      render();
+      renderNotes();
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", () => {
+      if (checked.size === 0) return;
+      navigator.clipboard.writeText([...checked].join("\n"));
+      const btn = document.getElementById("copyBtn");
+      btn.textContent = "Copied!";
+      setTimeout(() => btn.textContent = "Copy Notes", 1500);
+    });
+
+    render();
+  </script>
+</body>
+</html>
