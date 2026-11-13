@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>marky0-commit</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0d1117;
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: clamp(1.8rem, 4vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .projects {
+      display: grid;
+      gap: 12px;
+    }
+
+    .project {
+      display: block;
+      text-decoration: none;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: border-color 120ms ease, background-color 120ms ease;
+    }
+
+    .project:hover,
+    .project:focus-visible {
+      border-color: #58a6ff;
+      background: #1c2128;
+      outline: none;
+    }
+
+    .project-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .project-description {
+      margin: 6px 0 0;
+      color: #8b949e;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>marky0-commit</h1>
+    <section class="projects" aria-label="Project directory">
+      <a class="project" href="https://github.com/marky0-commit/AC-TelemetryInput">
+        <p class="project-title">AC-TelemetryInput</p>
+        <p class="project-description">Assetto Corsa Python telemetry input overlay</p>
+      </a>
+      <a class="project" href="./guidesetup/">
+        <p class="project-title">GuideSetup</p>
+        <p class="project-description">Car setup &amp; handling troubleshooter</p>
+      </a>
+
+      <!-- Copy and paste new project link cards here, following the same .project structure. -->
+    </section>
+  </main>
+</body>
+</html>
